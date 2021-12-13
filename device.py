@@ -6,9 +6,9 @@ import myfitnesspal
 from gpiozero import Servo
 
 food_nutrition = {}
-FOOD_ITEM_NAME = "ritz crackers"
+FOOD_ITEM_NAME = "Milano Mint Cookies"
 starting_weight = 0
-food_nutrition_serving_index = 0
+food_nutrition_serving_index = 1
 calorie_deficit = 0
 
 def weight_reader(proc, q_hx711_weight, cv_hx711_thread):
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     client = myfitnesspal.Client('pranavburugula', password='qxPtaA8z')
     print("Done creating MyFitnessPal client")
 
-    food_nutrition = client.get_food_search_results(FOOD_ITEM_NAME)[0]
+    food_nutrition = client.get_food_search_results(FOOD_ITEM_NAME)[2]
     print("{food_name}: calories = {cal}, servings = {s}, sugar = {sugar}".format(food_name = FOOD_ITEM_NAME, cal = food_nutrition.calories, s = food_nutrition.servings, sugar = food_nutrition.sugar))
     # print("Serving: ", food_nutrition.servings[0].nutrition_multiplier)
     q_day_data = deque(maxlen=1)
@@ -77,25 +77,28 @@ if __name__ == "__main__":
     try:
         while True:
             # print("Iteration {iter}: reading queue".format(iter = i))
-            weight = starting_weight
-            if first_iter:
-                print("Place snacks in box")
-                for i in range(10):
-                    print("Starting in {count}".format(count = 10 - i))
-                    time.sleep(1)
-                cv_hx711_thread.acquire()
-                cv_hx711_thread.wait()
-                cv_hx711_thread.release()
-                weight = float(q_hx711_weight.pop())
+            # weight = starting_weight
+            # if first_iter:
+            #     print("Place snacks in box")
+            #     for i in range(20):
+            #         print("Starting in {count}".format(count = 20 - i))
+            #         time.sleep(1)
+            #     cv_hx711_thread.acquire()
+            #     cv_hx711_thread.wait()
+            #     cv_hx711_thread.release()
+            #     weight = float(q_hx711_weight.pop())
+            #     starting_weight = weight
+            #     first_iter = False
+            #     print("starting weight = ", starting_weight)
+            # else:
+            cv_hx711_thread.acquire()
+            cv_hx711_thread.wait()
+            cv_hx711_thread.release()
+            weight = float(q_hx711_weight.pop())
+            if weight > starting_weight:
                 starting_weight = weight
-                first_iter = False
-                print("starting weight = ", starting_weight)
-            else:
-                cv_hx711_thread.acquire()
-                cv_hx711_thread.wait()
-                cv_hx711_thread.release()
-                weight = float(q_hx711_weight.pop())
-                print("weight = ", weight)
+            print("weight = ", weight)
+            print("starting weight = ", starting_weight)
 
             cv_mfp_thread.acquire()
             cv_mfp_thread.wait()
@@ -118,7 +121,7 @@ if __name__ == "__main__":
             else:
                 servo.min()
 
-            # time.sleep(5)
+            time.sleep(10)
     except (KeyboardInterrupt, SystemExit):
         proc.terminate()
         try:
