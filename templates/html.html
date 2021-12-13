@@ -1,0 +1,19 @@
+<html>
+    <p>Hi there. Update the information for the item in the safe here</p>
+    <div>
+        <form method="post" action="/">
+            <p>Item Name</p>
+            <input type="text" placeholder="{{item_name | safe}}" name="item_name">
+            
+            <p>Item Quantity</p>
+            <input type="number" placeholder="{{item_quantity}}" name="item_quantity">
+            
+            <p>Item Weight(lb)</p>
+            <input type="number" step=0.001 placeholder="{{item_weight}}" name="item_weight">
+            <button type="submit">Update</button>
+        </form>
+    </div>
+    <div>
+        <!-- {{search_results | safe}} -->
+    </div>
+</html>
